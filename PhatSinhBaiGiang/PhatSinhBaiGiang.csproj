@@ -229,6 +229,8 @@
     <Content Include="assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
     <Content Include="assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.js" />
     <Content Include="assets\vendor\libs\popper\popper.js" />
+    <Content Include="Assistant_Server\.gitignore" />
+    <Content Include="Assistant_Server\app.js" />
     <Content Include="Content\css\bootstrap-grid.css" />
     <Content Include="Content\css\bootstrap-grid.min.css" />
     <Content Include="Content\css\bootstrap-grid.rtl.css" />
@@ -303,6 +305,9 @@
     <Content Include="Content\css\bootstrap.rtl.min.css.map" />
     <Content Include="assets\js\markdown\showdown.js.map" />
     <Content Include="assets\js\markdown\showdown.min.js.map" />
+    <Content Include="Assistant_Server\.env" />
+    <Content Include="Assistant_Server\package-lock.json" />
+    <Content Include="Assistant_Server\package.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -335,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assistant_Server\node_modules\" />
     <Folder Include="UploadedFiles\" />
   </ItemGroup>
   <ItemGroup>
