@@ -163,6 +163,7 @@
         width: 100%;
         background-color: rgba(255, 255, 255, 0.8);
         display: none;
+        margin-bottom: 45px;
     }
         .continue-process button {
             max-width: 100%;
@@ -182,15 +183,17 @@
                 text-overflow: ellipsis;
                 font-size: 14px;
             }
-    .doanload-button {
-        height: auto;
-        padding: 10px 30px 15px 20px;
-        text-align: center;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background-color: #03c3ec';
-        display: none;
+    .download-button {
+        background-color: #03c3ec;
+        color: #fff;
+        border: none;
+        padding: 10px 30px 10px 20px;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        width: 90%;
+        border-radius: 5px;
+        margin: auto;
     }
 </style>
 
@@ -241,7 +244,7 @@
                             <div class="continue-process">
                                 <button type="button" id="nextRequest" class="btn btn-info">Nhấn để phát sinh tiếp <span class="next-content"></span></button>                               
                             </div>
-                            <button type="button" id="download" class="download-button">Nhấn để tải tài liệu</button>
+                            <button type="button" id="download" class="download-button">Tải xuống</button>
                         </div>
                     </div>
                 </div>
