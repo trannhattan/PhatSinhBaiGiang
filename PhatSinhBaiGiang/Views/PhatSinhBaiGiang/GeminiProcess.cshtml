@@ -265,7 +265,8 @@
                                             <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung</label></p>
                                         }
                                         <button type="button" id="@content.Id" class="prompt-button">Điều chỉnh prompt</button>
-                                        <div id="@content.Id" class="modal">
+
+                                        <div id="myModal@(content.Id)" class="modal">
                                             <div class="modal-content">
                                                 <p align="right">
                                                     <button type="button" id="@content.Id" class="close">x</button>
@@ -389,20 +390,14 @@ The content must be detail, easy to understand and professional that really conn
 
         $('.prompt-button').click(function() {
             var id = $(this).attr("id");
-            $(this).style.display = "block";;
+            var modal = document.getElementById("myModal" + id)
+            modal.style.display = "block";;
         });
         $('.close').click(function() {
             var id = $(this).attr("id");
+            var modal = document.getElementById("myModal" + id)
+            modal.style.display = "none";;
         });
-
-        function openModal(id) {
-            $('.modal').each(function() {
-                var id_cur = $(this).attr("id");
-                if (id.equals(id_cur)) {
-                    $(this).prop('display', true);
-                }
-            });
-        }
 
         async function getAnswer() {
             if (nd_context != "" && arrNoiDung.length > 0) {
