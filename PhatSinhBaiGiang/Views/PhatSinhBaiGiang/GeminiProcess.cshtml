@@ -176,6 +176,13 @@
                 text-overflow: ellipsis;
                 font-size: 14px;
             }
+            .continue-process button .download-content {
+                display: block;
+                text-wrap: nowrap;
+                overflow: show;
+                text-overflow: ellipsis;
+                font-size: 14px;
+            }
     .download-button {
         background-color: #03c3ec;
         color: #fff;
@@ -188,6 +195,47 @@
         border-radius: 5px;
         margin: auto;
     }
+    .prompt-button {
+        background-color: #df960d;
+        color: #fff;
+        width: 40%;
+        height: 7%;
+    }
+    .modal {
+        display: none; /* Hidden by default */
+        position: absolute; 
+        z-index: 69; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            position: flex;
+        }
+    .close {
+        color: #aaa;
+        background-color: #fefefe;
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        width: 2%;
+        border: none;
+    }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 </style>
 
 <div class="container-fluid flex-grow-1 container-p-y" style="padding-bottom: 0 !important;">
@@ -216,7 +264,19 @@
                                         {
                                             <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung</label></p>
                                         }
-                                        
+                                        <button type="button" id="@content.Id" class="prompt-button">Điều chỉnh prompt</button>
+
+                                        <div id="myModal@(content.Id)" class="modal">
+                                            <div class="modal-content">
+                                                <p align="right">
+                                                    <button type="button" id="@content.Id" class="close">x</button>
+                                                </p>
+                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Khác:</label></p>
+                                            </div>
+                                        </div>
                                     }
                                 }
                             </div>
@@ -236,7 +296,7 @@
                                 <img src="~/Content/images/processing.gif" alt="" />
                             </div>
                             <div class="continue-process">
-                                <button type="button" id="nextRequest" class="btn btn-info">Nhấn để phát sinh tiếp <span class="next-content"></span></button>
+                                <button type="button" id="nextRequest" class="btn btn-info">Nhấn để phát sinh tiếp <span class="next-content"></span></button>                               
                             </div>
                             <button type="button" id="download" class="download-button">Tải xuống</button>
                         </div>
@@ -328,6 +388,17 @@ The content must be detail, easy to understand and professional that really conn
             Export2Word('generatedResult');
         });
 
+        $('.prompt-button').click(function() {
+            var id = $(this).attr("id");
+            var modal = document.getElementById("myModal" + id)
+            modal.style.display = "block";;
+        });
+        $('.close').click(function() {
+            var id = $(this).attr("id");
+            var modal = document.getElementById("myModal" + id)
+            modal.style.display = "none";;
+        });
+
         async function getAnswer() {
             if (nd_context != "" && arrNoiDung.length > 0) {
                 var content = arrNoiDung.shift();
@@ -395,6 +466,20 @@ The content must be detail, easy to understand and professional that really conn
             }
             
             document.body.removeChild(downloadLink);
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const radioButtons = document.querySelectorAll('.check-noi-dung');
+    
+                radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                radioButtons.forEach(otherRadio => {
+                if (otherRadio !== this) {
+                    otherRadio.checked = false;
+                }
+            });
+        });
+    });
+});
         }
     </script>
 }
