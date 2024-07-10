@@ -196,10 +196,14 @@
         margin: auto;
     }
     .prompt-button {
-        background-color: #df960d;
-        color: #fff;
-        width: 40%;
-        height: 7%;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #888;
+        padding: 5px 5px;
+        border: none;
+    }
+    .prompt-textbox {
+        width: 100%;
+        margin: auto;
     }
     .modal {
         display: none; /* Hidden by default */
@@ -262,19 +266,20 @@
                                         }
                                         else
                                         {
-                                            <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung</label></p>
+                                            <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung<button type="button" id="@content.Id" class="prompt-button"><span style="font-size: 18px;">&#9998;</span></button></label></p>
                                         }
-                                        <button type="button" id="@content.Id" class="prompt-button">Điều chỉnh prompt</button>
-
                                         <div id="myModal@(content.Id)" class="modal">
                                             <div class="modal-content">
                                                 <p align="right">
                                                     <button type="button" id="@content.Id" class="close">x</button>
                                                 </p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Khác:</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@(content.Id)" class="check-noi-dung" checked/>Kiến thức</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@(content.Id)" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
+                                                <p class="@content.Style"><label><input type="radio" id="@(content.Id)" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
+                                                <p class="@content.Style">
+                                                    <label><input type="radio" value="other" id="@content.Id" class="check-noi-dung"/>Khác:</label>
+                                                    <input type="text" class="prompt-textbox" style="display: none;">
+                                                </p>
                                             </div>
                                         </div>
                                     }
@@ -399,6 +404,36 @@ The content must be detail, easy to understand and professional that really conn
             modal.style.display = "none";;
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('.check-noi-dung');
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    radioButtons.forEach(otherRadio => {
+                        if (otherRadio !== this && otherRadio.id === this.id) {
+                            otherRadio.checked = false;
+                        }
+                    });
+                });
+            });
+        });
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            const radioButtons = modal.querySelectorAll('.check-noi-dung');
+            const textbox = modal.querySelector('.prompt-textbox');
+            const otherRadio = modal.querySelector('.check-noi-dung[value="other"]');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('click', function() {
+                    if (this.value === 'other' && this.checked) {
+                        textbox.style.display = 'inline-block';
+                    } else {
+                        textbox.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         async function getAnswer() {
             if (nd_context != "" && arrNoiDung.length > 0) {
                 var content = arrNoiDung.shift();
@@ -466,20 +501,6 @@ The content must be detail, easy to understand and professional that really conn
             }
             
             document.body.removeChild(downloadLink);
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const radioButtons = document.querySelectorAll('.check-noi-dung');
-    
-                radioButtons.forEach(radio => {
-                radio.addEventListener('change', function() {
-                radioButtons.forEach(otherRadio => {
-                if (otherRadio !== this) {
-                    otherRadio.checked = false;
-                }
-            });
-        });
-    });
-});
         }
     </script>
 }
