@@ -263,20 +263,20 @@
                                         else
                                         {
                                             <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung</label></p>
-                                        }
-                                        <button type="button" id="@content.Id" class="prompt-button">Điều chỉnh prompt</button>
+                                            <button type="button" id="@content.Id" class="prompt-button">Điều chỉnh prompt</button>
 
-                                        <div id="myModal@(content.Id)" class="modal">
-                                            <div class="modal-content">
-                                                <p align="right">
-                                                    <button type="button" id="@content.Id" class="close">x</button>
-                                                </p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
-                                                <p class="@content.Style"><label><input type="radio" id="@content.Id" class="check-noi-dung"/>Khác:</label></p>
+                                            <div id="myModal@(content.Id)" class="modal">
+                                                <div class="modal-content">
+                                                    <p align="right">
+                                                        <button type="button" id="@content.Id" class="close">x</button>
+                                                    </p>
+                                                    <p class="@content.Style"><label><input type="radio" id="@(content.Id)_1" class="check-noi-dung"/>Kiến thức</label></p>
+                                                    <p class="@content.Style"><label><input type="radio" id="@(content.Id)_2" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
+                                                    <p class="@content.Style"><label><input type="radio" id="@(content.Id)_3" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
+                                                    <p class="@content.Style"><label><input type="radio" id="@(content.Id)_4" class="check-noi-dung"/>Khác:</label></p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                     }
                                 }
                             </div>
@@ -397,6 +397,20 @@ The content must be detail, easy to understand and professional that really conn
             var id = $(this).attr("id");
             var modal = document.getElementById("myModal" + id)
             modal.style.display = "none";;
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('.check-noi-dung');
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    radioButtons.forEach(otherRadio => {
+                        if (otherRadio !== this) {
+                            otherRadio.checked = false;
+                        }
+                    });
+                });
+            });
         });
 
         async function getAnswer() {
