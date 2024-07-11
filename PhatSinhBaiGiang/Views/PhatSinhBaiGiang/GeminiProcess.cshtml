@@ -223,7 +223,20 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%; /* Could be more or less, depending on screen size */
-            position: flex;
+            display: flex;
+            flex-direction: row; /* Change the flex direction to row */
+            justify-content: space-between;
+        }
+        .modal-options {
+            width: 45%;
+        }
+        .modal-prompt {
+            width: 50%;
+        }
+        .prompt-display {
+            width: 100%;
+            height: 150px;
+            margin-top: 10px;
         }
     .close {
         color: #aaa;
@@ -252,7 +265,7 @@
                         @* <label>Prompt cho Gemini AI: (phải có từ khóa <span style="color: #db0505">{context}</span> để đại diện cho ngữ cảnh và <span style="color: #db0505">{content}</span> để đại diện cho nội dung câu hỏi)</label>
                         <textarea id="prompt" class="form-control" rows="3"></textarea> *@
                     </div> 
-                        <input type="text", id="prompt" style="display: none;">
+                        @* <input type="text", id="prompt" style="display: none;"> *@
                     <div class="process-container row">
                         <div class="content-list col-md-5 col-lg-4">
                             <div class="content-title">Nội dung đã chọn</div>
@@ -271,16 +284,23 @@
                                         }
                                         <div id="myModal@(content.Id)" class="modal">
                                             <div class="modal-content">
-                                                <p align="right">
-                                                    <button type="button" id="@content.Id" class="close">x</button>
-                                                </p>
-                                                <p class="@content.Style"><label><input type="radio" value="default" id="@(content.Id)" class="check-noi-dung" checked />Kiến thức</label></p>
-                                                <p class="@content.Style"><label><input type="radio" value="syntax" id="@(content.Id)" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
-                                                <p class="@content.Style"><label><input type="radio" value = "reference" id="@(content.Id)" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
-                                                <p class="@content.Style">
-                                                    <label><input type="radio" value="other" id="@content.Id" class="check-noi-dung"/>Khác:</label>
+                                                <div>
+                                                    <div class="modal-option">
+                                                        <p class="@content.Style"><label><input type="radio" value="default" id="@(content.Id)" class="check-noi-dung" checked />Kiến thức</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value="syntax" id="@(content.Id)" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value = "reference" id="@(content.Id)" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value="other" id="@content.Id" class="check-noi-dung"/>Khác:</label></p>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-prompt">
+                                                    <p align="right">
+                                                        <button type="button" id="@content.Id" class="close">x</button>
+                                                    </p>
+                                                    <h4>Prompt:</h4>
                                                     <input type="text" class="prompt-textbox" id="@content.Id" style="display: none;">
-                                                </p>
+                                                    <textarea id="prompt" class="prompt-display" readonly></textarea>
+                                                    
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -424,13 +444,33 @@ The content must be detail, easy to understand and professional that really conn
         document.querySelectorAll('.modal').forEach(modal => {
             const radioButtons = modal.querySelectorAll('.check-noi-dung');
             const textbox = modal.querySelector('.prompt-textbox');
+            const promptDisplay = modal.querySelector('.prompt-display');
 
             radioButtons.forEach(radio => {
                 radio.addEventListener('click', function() {
                     if (this.value === 'other' && this.checked) {
                         textbox.style.display = 'inline-block';
+                        promptDisplay.style.display = 'none';
                     } else {
                         textbox.style.display = 'none';
+                        promptDisplay.style.display = 'inline-block';
+                        if (this.checked) {
+                            let newPrompt = '';
+                            if (this.value === 'other') {
+                                newPrompt = textbox.value;
+                            } else if (this.value === 'default') {
+                                newPrompt = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
+                                {context}
+                                I'd like you to start writing the first sections, focusing particularly on the {content}.
+                                The content begin with the important meaning of knowing Database architecture in relational databases in Analytic data (WHY). After that, you explain WHAT - Database architecture in relational databases. Then add HOW to build Database architecture in BigQuery in Google.
+                                The content must be detail, easy to understand and professional that really connect with readers. Use examples to help explain complex concepts with our readers. No made assumption. Use table, image when suitable to illustrate. Give links reference for the learner can read more. Do not write any further until I instruct you to do so. Translate the result to Vietnammese`;
+                            } else if (this.value === 'syntax') {
+                                newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML.`;
+                            } else if (this.value === 'reference') {
+                                newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
+                            }
+                            promptDisplay.value = newPrompt;
+                        }
                     }
                 });
             });
@@ -441,8 +481,10 @@ The content must be detail, easy to understand and professional that really conn
             document.querySelectorAll('.modal').forEach(modal => {
                 const textbox = modal.querySelector('.prompt-textbox');
                 const radioButtons = modal.querySelectorAll('.check-noi-dung');
+
                 radioButtons.forEach(radio => {
                     if (radio.id === id && radio.checked) {
+                        let newPrompt = '';
                         if (radio.value === 'other') {
                             newPrompt = textbox.value;
                         } else if (radio.value === 'default') {
@@ -457,7 +499,7 @@ The content must be detail, easy to understand and professional that really conn
                             newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
                         }
                         $('#prompt').val(newPrompt);
-                    } 
+                    }
                 });
 
             }); 
