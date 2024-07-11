@@ -251,7 +251,8 @@
                     <div class="prompt-content form-group">
                         <label>Prompt cho Gemini AI: (phải có từ khóa <span style="color: #db0505">{context}</span> để đại diện cho ngữ cảnh và <span style="color: #db0505">{content}</span> để đại diện cho nội dung câu hỏi)</label>
                         <textarea id="prompt" class="form-control" rows="3"></textarea>
-                    </div>
+                    </div> 
+                        @* <input type="text", id="prompt" style="display: none;"> *@
                     <div class="process-container row">
                         <div class="content-list col-md-5 col-lg-4">
                             <div class="content-title">Nội dung đã chọn</div>
@@ -278,7 +279,7 @@
                                                 <p class="@content.Style"><label><input type="radio" id="@(content.Id)" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
                                                 <p class="@content.Style">
                                                     <label><input type="radio" value="other" id="@content.Id" class="check-noi-dung"/>Khác:</label>
-                                                    <input type="text" class="prompt-textbox" style="display: none;">
+                                                    <input type="text" class="prompt-textbox" id="@content.Id" style="display: none;">
                                                 </p>
                                             </div>
                                         </div>
@@ -367,6 +368,7 @@ The content must be detail, easy to understand and professional that really conn
             }
         }
         const arrNoiDung = [];
+        const arrId = [];
         var nd_context = "";
         $('#sendRequest').click(function () {
             if ($('input.check-noi-dung:checked').length <= 0) {
@@ -379,6 +381,7 @@ The content must be detail, easy to understand and professional that really conn
                     if ($(this).attr("parent-id") == id) {
                         nd_context += $(this).text() + "\n";
                         arrNoiDung.push($(this).text());
+                        arrId.push($(this).attr("id"));
                     }
                 });
             });
@@ -395,12 +398,12 @@ The content must be detail, easy to understand and professional that really conn
 
         $('.prompt-button').click(function() {
             var id = $(this).attr("id");
-            var modal = document.getElementById("myModal" + id)
+            var modal = document.getElementById("myModal" + id);
             modal.style.display = "block";;
         });
         $('.close').click(function() {
             var id = $(this).attr("id");
-            var modal = document.getElementById("myModal" + id)
+            var modal = document.getElementById("myModal" + id);
             modal.style.display = "none";;
         });
 
@@ -421,7 +424,6 @@ The content must be detail, easy to understand and professional that really conn
         document.querySelectorAll('.modal').forEach(modal => {
             const radioButtons = modal.querySelectorAll('.check-noi-dung');
             const textbox = modal.querySelector('.prompt-textbox');
-            const otherRadio = modal.querySelector('.check-noi-dung[value="other"]');
 
             radioButtons.forEach(radio => {
                 radio.addEventListener('click', function() {
@@ -434,8 +436,30 @@ The content must be detail, easy to understand and professional that really conn
             });
         });
 
+        function updatePrompt() {
+            var id = arrId.shift();
+            document.querySelectorAll('.modal').forEach(modal => {
+                const textbox = modal.querySelector('.prompt-textbox');
+                const radioButtons = modal.querySelectorAll('.check-noi-dung');
+                radioButtons.forEach(radio => {
+                        
+                    if (radio.id === id && radio.checked) {
+                        if (radio.value === 'other') {
+                            $('#prompt').val(textbox.value);
+                        }
+                        else {
+                            $('#prompt').val("write 2");
+                        }
+                    }  
+                });
+
+            }); 
+        }
+
         async function getAnswer() {
             if (nd_context != "" && arrNoiDung.length > 0) {
+                updatePrompt();
+                
                 var content = arrNoiDung.shift();
                 var question = $('#prompt').val().replace("{context}", nd_context).replace("{content}", content);
                 var parentid = 'generatedContainer';
