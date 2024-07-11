@@ -298,7 +298,7 @@
                                                     </p>
                                                     <h4>Prompt:</h4>
                                                     <input type="text" class="prompt-textbox" id="@content.Id" style="display: none;">
-                                                    <textarea id="prompt" class="prompt-display" readonly></textarea>
+                                                    <textarea id="prompt" class="prompt-display"></textarea>
                                                     
                                                 </div>
                                             </div>
@@ -337,13 +337,19 @@
     <script src="~/assets/js/markdown/showdown.min.js" type="text/javascript"></script>
     <script src="~/assets/js/gemini-processing.js?v=1.1" type="text/javascript"></script>
     <script>
-        $(document).ready(function () {
-            var prompt = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
+
+        const system_prompt = '';
+
+        const prompt1 = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
 {context}
 I'd like you to start writing the first sections, focusing particularly on the {content}.
 The content begin with the important meaning of knowing Database architecture in relational databases in Analytic data (WHY). After that, you explain WHAT - Database architecture in relational databases. Then add HOW to build Database architecture in BigQuery in Google.
 The content must be detail, easy to understand and professional that really connect with readers. Use examples to help explain complex concepts with our readers. No made assumption. Use table, image when suitable to illustrate. Give links reference for the learner can read more. Do not write any further until I instruct you to do so. Translate the result to Vietnammese`;
-            $('#prompt').val(prompt);
+        const prompt2 = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML.`;
+        const prompt3 = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
+
+        $(document).ready(function () {
+            $('#prompt').val(prompt1);
             $('.modal').each(function() {
                 var defaultRadio = $(this).find('.check-noi-dung[value="default"]');
                 defaultRadio.prop('checked', true);
@@ -463,15 +469,11 @@ The content must be detail, easy to understand and professional that really conn
                             if (this.value === 'other') {
                                 newPrompt = textbox.value;
                             } else if (this.value === 'default') {
-                                newPrompt = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
-                                {context}
-                                I'd like you to start writing the first sections, focusing particularly on the {content}.
-                                The content begin with the important meaning of knowing Database architecture in relational databases in Analytic data (WHY). After that, you explain WHAT - Database architecture in relational databases. Then add HOW to build Database architecture in BigQuery in Google.
-                                The content must be detail, easy to understand and professional that really connect with readers. Use examples to help explain complex concepts with our readers. No made assumption. Use table, image when suitable to illustrate. Give links reference for the learner can read more. Do not write any further until I instruct you to do so. Translate the result to Vietnammese`;
+                                newPrompt = prompt1;
                             } else if (this.value === 'syntax') {
-                                newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML.`;
+                                newPrompt = prompt2;
                             } else if (this.value === 'reference') {
-                                newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
+                                newPrompt = prompt3;
                             }
                             promptDisplay.value = newPrompt;
                         }
@@ -492,15 +494,11 @@ The content must be detail, easy to understand and professional that really conn
                         if (radio.value === 'other') {
                             newPrompt = textbox.value;
                         } else if (radio.value === 'default') {
-                            newPrompt = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
-                            {context}
-                            I'd like you to start writing the first sections, focusing particularly on the {content}.
-                            The content begin with the important meaning of knowing Database architecture in relational databases in Analytic data (WHY). After that, you explain WHAT - Database architecture in relational databases. Then add HOW to build Database architecture in BigQuery in Google.
-                            The content must be detail, easy to understand and professional that really connect with readers. Use examples to help explain complex concepts with our readers. No made assumption. Use table, image when suitable to illustrate. Give links reference for the learner can read more. Do not write any further until I instruct you to do so. Translate the result to Vietnammese`;
+                            newPrompt = prompt1;
                         } else if (radio.value === 'syntax') {
-                            newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML.`;
+                            newPrompt = prompt2;
                         } else if (radio.value === 'reference') {
-                            newPrompt = `Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
+                            newPrompt = prompt3;
                         }
                         $('#prompt').val(newPrompt);
                     }
