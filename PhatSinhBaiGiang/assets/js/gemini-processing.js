@@ -37,6 +37,6 @@ async function sendQuestionToAgent(userQuestion, outputid, parentid) {
 		element.scrollTop = currentHeight;
 	}
 	
-
+	
 	console.log('Response fully received');
 }

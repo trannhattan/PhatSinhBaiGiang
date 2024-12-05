@@ -151,7 +151,6 @@
         background-color: rgba(255, 255, 255, 0.8);
         display: none;
     }
-
         .img-processing img {
             height: 100%;
         }
@@ -164,6 +163,7 @@
         width: 100%;
         background-color: rgba(255, 255, 255, 0.8);
         display: none;
+        margin-bottom: 45px;
     }
         .continue-process button {
             max-width: 100%;
@@ -176,6 +176,83 @@
                 text-overflow: ellipsis;
                 font-size: 14px;
             }
+            .continue-process button .download-content {
+                display: block;
+                text-wrap: nowrap;
+                overflow: show;
+                text-overflow: ellipsis;
+                font-size: 14px;
+            }
+    .download-button {
+        background-color: #03c3ec;
+        color: #fff;
+        border: none;
+        padding: 10px 30px 10px 20px;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        width: 90%;
+        border-radius: 5px;
+        margin: auto;
+    }
+    .prompt-button {
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #888;
+        padding: 5px 5px;
+        border: none;
+    }
+    .prompt-textbox {
+        width: 100%;
+        margin: auto;
+    }
+    .modal {
+        display: none; /* Hidden by default */
+        position: absolute; 
+        z-index: 69; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            display: flex;
+            flex-direction: row; /* Change the flex direction to row */
+            justify-content: space-between;
+        }
+        .modal-options {
+            width: 45%;
+        }
+        .modal-prompt {
+            width: 50%;
+        }
+        .prompt-display {
+            width: 100%;
+            height: 150px;
+            margin-top: 10px;
+        }
+    .close {
+        color: #aaa;
+        background-color: #fefefe;
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        width: 2%;
+        border: none;
+    }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 </style>
 
 <div class="container-fluid flex-grow-1 container-p-y" style="padding-bottom: 0 !important;">
@@ -185,9 +262,10 @@
                 <div class="card-body">
                     <div class="process-title">Phát sinh bài giảng cho các nội dung đã chọn</div>
                     <div class="prompt-content form-group">
-                        <label>Prompt cho Gemini AI: (phải có từ khóa <span style="color: #db0505">{context}</span> để đại diện cho ngữ cảnh và <span style="color: #db0505">{content}</span> để đại diện cho nội dung câu hỏi)</label>
-                        <textarea id="prompt" class="form-control" rows="3"></textarea>
-                    </div>
+                        @* <label>Prompt cho Gemini AI: (phải có từ khóa <span style="color: #db0505">{context}</span> để đại diện cho ngữ cảnh và <span style="color: #db0505">{content}</span> để đại diện cho nội dung câu hỏi)</label>
+                        <textarea id="prompt" class="form-control" rows="3"></textarea> *@
+                    </div> 
+                        @* <input type="text", id="prompt" style="display: none;"> *@
                     <div class="process-container row">
                         <div class="content-list col-md-5 col-lg-4">
                             <div class="content-title">Nội dung đã chọn</div>
@@ -202,8 +280,29 @@
                                         }
                                         else
                                         {
-                                            <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung</label></p>
+                                            <p class="@content.Style"><label id="@content.Id" parent-id="@content.IdCha" class="check-noi-dung" data-stt="@content.Stt" data-content="@content.Noidung" data-style="@content.Style"> @(content.Stt != "" ? content.Stt + "/" : "") @content.Noidung<button type="button" id="@content.Id" class="prompt-button"><span style="font-size: 18px;">&#9998;</span></button></label></p>
                                         }
+                                        <div id="myModal@(content.Id)" class="modal">
+                                            <div class="modal-content">
+                                                <div>
+                                                    <div class="modal-option">
+                                                        <p class="@content.Style"><label><input type="radio" value="default" id="@(content.Id)" class="check-noi-dung" checked />Kiến thức</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value="syntax" id="@(content.Id)" class="check-noi-dung"/>Kiến thức + Cú pháp lệnh</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value = "reference" id="@(content.Id)" class="check-noi-dung"/>Tài liệu tham khảo</label></p>
+                                                        <p class="@content.Style"><label><input type="radio" value="other" id="@content.Id" class="check-noi-dung"/>Khác:</label></p>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-prompt">
+                                                    <p align="right">
+                                                        <button type="button" id="@content.Id" class="close">x</button>
+                                                    </p>
+                                                    <h4>Prompt:</h4>
+                                                    <input type="text" class="prompt-textbox" id="@content.Id" style="display: none;">
+                                                    <textarea id="prompt" class="prompt-display"></textarea>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
                                     }
                                 }
                             </div>
@@ -216,90 +315,6 @@
                             <div class="generate-content" id="generatedContainer">
                                 <div class="content-container">
                                     <div class="generate-results" id="generatedResult">
-                                        @*<div class="generate-item">
-                                                    <pre><code class="python language-python">import math<br>
-            def giai_phuong_trinh_bac_2(a, b, c):
-              """Giải phương trình bậc 2: ax^2 + bx + c = 0
-
-              Args:
-                a: Hệ số của x^2
-                b: Hệ số của x
-                c: Hằng số tự do
-
-              Returns:
-                Một tuple chứa các nghiệm của phương trình.
-                Nếu phương trình có 2 nghiệm phân biệt, tuple sẽ chứa 2 số thực.
-                Nếu phương trình có nghiệm kép, tuple sẽ chứa 1 số thực được lặp lại 2 lần.
-                Nếu phương trình vô nghiệm, tuple sẽ chứa None.
-              """
-              # Tính delta
-              delta = b**2 - 4*a*c
-
-              # Kiểm tra delta và tính nghiệm
-              if delta &gt; 0:
-                x1 = (-b + math.sqrt(delta)) / (2*a)
-                x2 = (-b - math.sqrt(delta)) / (2*a)
-                return x1, x2
-              elif delta == 0:
-                x = -b / (2*a)
-                return x, x
-              else:
-                return None
-
-            # Nhập các hệ số từ người dùng
-            a = float(input("Nhập hệ số a: "))
-            b = float(input("Nhập hệ số b: "))
-            c = float(input("Nhập hệ số c: "))
-
-            # Giải phương trình và in kết quả
-            nghiem = giai_phuong_trinh_bac_2(a, b, c)
-
-            if nghiem is not None:
-              if nghiem[0] == nghiem[1]:
-                print("Phương trình có nghiệm kép x =", nghiem[0])
-              else:
-                print("Phương trình có hai nghiệm phân biệt:")
-                print("x1 =", nghiem[0])
-                print("x2 =", nghiem[1])
-            else:
-              print("Phương trình vô nghiệm")
-            </code>
-                                                    <button id="btncopycode" class="btn-copy-code" onclick="copyCode(this)"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" class="icon-sm"><path fill="currentColor" fill-rule="evenodd" d="M7 5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-2v2a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h2zm2 2h5a3 3 0 0 1 3 3v5h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1zM5 9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1z" clip-rule="evenodd"></path></svg> Copy code</button>
-            </pre>
-                                                    <p><strong>Giải thích:</strong></p>
-                                                    <ol>
-                                                        <li><strong>Hàm <code>giai_phuong_trinh_bac_2(a, b, c)</code>:</strong></li>
-                                                    </ol>
-                                                    <ul>
-                                                        <li>Nhận vào 3 tham số là các hệ số a, b, c của phương trình bậc 2.</li>
-                                                        <li>Tính delta dựa theo công thức delta = b^2 - 4ac.</li>
-                                                        <li>
-                                                            Kiểm tra giá trị của delta:<ul>
-                                                                <li>Nếu delta &gt; 0: Phương trình có 2 nghiệm phân biệt, tính và trả về 2 nghiệm x1, x2.</li>
-                                                                <li>Nếu delta == 0: Phương trình có nghiệm kép, tính và trả về nghiệm x được lặp lại 2 lần trong tuple.</li>
-                                                                <li>Nếu delta &lt; 0: Phương trình vô nghiệm, trả về None.</li>
-                                                            </ul>
-                                                        </li>
-                                                    </ul>
-                                                    <ol>
-                                                        <li><strong>Phần code ngoài hàm:</strong></li>
-                                                    </ol>
-                                                    <ul>
-                                                        <li>Lấy input là 3 hệ số a, b, c từ người dùng.</li>
-                                                        <li>Gọi hàm <code>giai_phuong_trinh_bac_2()</code> để giải phương trình với các hệ số vừa nhập.</li>
-                                                        <li>
-                                                            Kiểm tra giá trị trả về từ hàm:<ul>
-                                                                <li>Nếu khác None: In ra nghiệm của phương trình (nghiệm kép hoặc 2 nghiệm phân biệt).</li>
-                                                                <li>Nếu là None: In ra thông báo "Phương trình vô nghiệm".</li>
-                                                            </ul>
-                                                        </li>
-                                                    </ul>
-                                                    <p><strong>Lưu ý:</strong></p>
-                                                    <ul>
-                                                        <li>Hàm <code>math.sqrt()</code> được sử dụng để tính căn bậc hai.</li>
-                                                        <li>Chương trình này giả định rằng người dùng nhập vào các số thực cho a, b, c.</li>
-                                                    </ul>
-                                                </div>*@
                                     </div>
                                 </div>
                             </div>
@@ -307,8 +322,9 @@
                                 <img src="~/Content/images/processing.gif" alt="" />
                             </div>
                             <div class="continue-process">
-                                <button type="button" id="nextRequest" class="btn btn-info">Nhấn để phát sinh tiếp <span class="next-content"></span></button>
+                                <button type="button" id="nextRequest" class="btn btn-info">Nhấn để phát sinh tiếp <span class="next-content"></span></button>                               
                             </div>
+                            <button type="button" id="download" class="download-button">Tải xuống</button>
                         </div>
                     </div>
                 </div>
@@ -316,19 +332,30 @@
         </div>
     </div>
 </div>
+
 @section scripts {
     <script src="~/assets/js/markdown/showdown.min.js" type="text/javascript"></script>
     <script src="~/assets/js/gemini-processing.js?v=1.1" type="text/javascript"></script>
     <script>
-        $(document).ready(function () {
-            var prompt = `Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
+
+        const system_prompt = 'From now you are a SQL Teacher, have a lot of practical experience and high pedagogical skill, can explain knowledge in many ways to easy understand to learner, inspire learner. "SQL for Data Analytics" is first module in Data Analytics Certificate. The learners almost are working professionals and senior students.  You update your chat information only, no create content. I will give you syllabus for module after that';
+
+        var prompt1 = `{systemPrompt} Become a good Teacher, have a lot of practical experience in SQL. You will write a SQL handbook for working professionals and senior students. The document not only focuses on SQL query techniques in Google BigQuery ML but also guides learners on how to use SQL to analyze data efficiently in their work. The outline of the document as follows:
 {context}
 I'd like you to start writing the first sections, focusing particularly on the {content}.
 The content begin with the important meaning of knowing Database architecture in relational databases in Analytic data (WHY). After that, you explain WHAT - Database architecture in relational databases. Then add HOW to build Database architecture in BigQuery in Google.
 The content must be detail, easy to understand and professional that really connect with readers. Use examples to help explain complex concepts with our readers. No made assumption. Use table, image when suitable to illustrate. Give links reference for the learner can read more. Do not write any further until I instruct you to do so. Translate the result to Vietnammese`;
-            $('#prompt').val(prompt);
-        });
+        var prompt2 = `{systemPrompt} Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML.`;
+        var prompt3 = `{systemPrompt} Please provide detailed information about the syntax and usage of SQL commands related to {content}, with examples specific to Google BigQuery ML. Please provide references to the sources of information used in the document.`;
 
+        $(document).ready(function () {
+            $('#prompt').val(prompt1);
+            $('.modal').each(function() {
+                var defaultRadio = $(this).find('.check-noi-dung[value="default"]');
+                defaultRadio.prop('checked', true);
+                defaultRadio.trigger('click');
+            });
+        });
         $('.check-noi-dung').change(function () {
             var id = $(this).attr("id");
             if ($(this).is(':checked')) {
@@ -371,6 +398,7 @@ The content must be detail, easy to understand and professional that really conn
             }
         }
         const arrNoiDung = [];
+        const arrId = [];
         var nd_context = "";
         $('#sendRequest').click(function () {
             if ($('input.check-noi-dung:checked').length <= 0) {
@@ -383,6 +411,7 @@ The content must be detail, easy to understand and professional that really conn
                     if ($(this).attr("parent-id") == id) {
                         nd_context += $(this).text() + "\n";
                         arrNoiDung.push($(this).text());
+                        arrId.push($(this).attr("id"));
                     }
                 });
             });
@@ -393,10 +422,97 @@ The content must be detail, easy to understand and professional that really conn
             getAnswer();
         });
 
+        $('#download').click(function() {
+            Export2Word('generatedResult');
+        });
+
+        $('.prompt-button').click(function() {
+            var id = $(this).attr("id");
+            var modal = document.getElementById("myModal" + id);
+            modal.style.display = "block";
+        });
+        $('.close').click(function() {
+            var id = $(this).attr("id");
+            var modal = document.getElementById("myModal" + id);
+            modal.style.display = "none";;
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('.check-noi-dung');
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    radioButtons.forEach(otherRadio => {
+                        if (otherRadio !== this && otherRadio.id === this.id) {
+                            otherRadio.checked = false;
+                        }
+                    });
+                });
+            });
+        });
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            const radioButtons = modal.querySelectorAll('.check-noi-dung');
+            const textbox = modal.querySelector('.prompt-textbox');
+            const promptDisplay = modal.querySelector('.prompt-display');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('click', function() {
+                    if (this.value === 'other' && this.checked) {
+                        textbox.style.display = 'inline-block';
+                        promptDisplay.style.display = 'none';
+                    } else {
+                        textbox.style.display = 'none';
+                        promptDisplay.style.display = 'inline-block';
+                        if (this.checked) {
+                            let newPrompt = '';
+                            if (this.value === 'other') {
+                                newPrompt = textbox.value;
+                            } else if (this.value === 'default') {
+                                newPrompt = prompt1;
+                            } else if (this.value === 'syntax') {
+                                newPrompt = prompt2;
+                            } else if (this.value === 'reference') {
+                                newPrompt = prompt3;
+                            }
+                            promptDisplay.value = newPrompt;
+                        }
+                    }
+                });
+            });
+        });
+
+        function updatePrompt() {
+            var id = arrId.shift();
+            document.querySelectorAll('.modal').forEach(modal => {
+                const textbox = modal.querySelector('.prompt-textbox');
+                const radioButtons = modal.querySelectorAll('.check-noi-dung');
+
+                radioButtons.forEach(radio => {
+                    if (radio.id === id && radio.checked) {
+                        let newPrompt = '';
+                        if (radio.value === 'other') {
+                            newPrompt = textbox.value;
+                        } else if (radio.value === 'default') {
+                            newPrompt = prompt1;
+                        } else if (radio.value === 'syntax') {
+                            newPrompt = prompt2;
+                        } else if (radio.value === 'reference') {
+                            newPrompt = prompt3;
+                        }
+                        $('#prompt').val(newPrompt);
+                    }
+                });
+
+            }); 
+        }
+
         async function getAnswer() {
             if (nd_context != "" && arrNoiDung.length > 0) {
+                updatePrompt();
+                
                 var content = arrNoiDung.shift();
-                var question = $('#prompt').val().replace("{context}", nd_context).replace("{content}", content);
+                var question = $('#prompt').val().replace("{systemPrompt}", system_prompt).replace("{context}", nd_context).replace("{content}", content);
                 var parentid = 'generatedContainer';
                 var outputid = 'generatedItem' + $('.generate-item').length + 1;
                 var htmlResult = `<div class="generate-item" id="${outputid}"></div>`;
@@ -412,7 +528,6 @@ The content must be detail, easy to understand and professional that really conn
                 }
             }
         }
-
         function copyCode(el) {
             var textToCopy = $(el).parent().find('code').html();
             var tempTextarea = $('<textarea>');
@@ -426,6 +541,41 @@ The content must be detail, easy to understand and professional that really conn
             setTimeout(() => {
                 el.innerHTML = oldtext;
             }, 2000);
+        }
+        function Export2Word(element, filename = ''){
+            var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='https://www.w3.org/TR/html40/'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+            var postHtml = "</body></html>";
+            var html = preHtml+document.getElementById(element).innerHTML+postHtml;
+
+            var blob = new Blob(['\ufeff', html], {
+                type: 'application/msword'
+            });
+            
+            // Specify link url
+            var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+            
+            // Specify file name
+            filename = filename?filename+'.doc':'document.doc';
+            
+            // Create download link element
+            var downloadLink = document.createElement("a");
+
+            document.body.appendChild(downloadLink);
+            
+            if(navigator.msSaveOrOpenBlob ){
+                navigator.msSaveOrOpenBlob(blob, filename);
+            }else{
+                // Create a link to the file
+                downloadLink.href = url;
+                
+                // Setting the file name
+                downloadLink.download = filename;
+                
+                //triggering the function
+                downloadLink.click();
+            }
+            
+            document.body.removeChild(downloadLink);
         }
     </script>
 }
